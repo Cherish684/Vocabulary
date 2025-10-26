@@ -8,7 +8,7 @@ Provide gamified vocabulary learning project that shows meanings, examples, syno
 - Frontend - HTML, CSS, JS
 - API used - Dictionary API, Datamuse API, Web Speech API,  Web Share API
 - Browser storage - Local Storage
-- AI agent added
+- AI agents added
 ## Project Structure
 index.html
 style.css
