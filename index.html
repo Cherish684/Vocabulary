@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VocabBoost - English Vocabulary App</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* AI Agent Section Styles */
+        .ai-search-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .ai-search-container h2 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .ai-search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .ai-search-box input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            outline: none;
+        }
+
+        .ai-search-box button {
+            padding: 15px 30px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ai-search-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .ai-search-info {
+            color: white;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .ai-results-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            min-height: 300px;
+        }
+
+        .ai-loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .ai-loading i {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .ai-loading p {
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .ai-empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+        }
+
+        .ai-empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .ai-empty-state p {
+            font-size: 1.2rem;
+        }
+
+        /* Word Net Results */
+        .wordnet-results {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .wordnet-section {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+        }
+
+        .wordnet-section h3 {
+            color: #333;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .wordnet-section h3 i {
+            color: #667eea;
+            font-size: 1.5rem;
+        }
+
+        .word-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .word-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .word-tag:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .no-results {
+            color: #999;
+            font-style: italic;
+            padding: 10px 0;
+        }
+
+        /* Word Clue Quiz */
+        .wordclue-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .quiz-header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 30px;
+            border-radius: 12px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-progress-info {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .quiz-score-info {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .quiz-question-card {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+        }
+
+        .quiz-question-card h3 {
+            color: #333;
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .quiz-options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .quiz-option-btn {
+            background: white;
+            border: 3px solid #e0e0e0;
+            padding: 18px 25px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .quiz-option-btn:hover:not(:disabled) {
+            border-color: #667eea;
+            background: #f8f9ff;
+            transform: translateX(8px);
+        }
+
+        .quiz-option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .quiz-option-btn.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .quiz-option-btn.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .quiz-feedback-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .quiz-feedback-box.correct {
+            background: #d4edda;
+            color: #155724;
+            border-left: 5px solid #28a745;
+        }
+
+        .quiz-feedback-box.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 5px solid #dc3545;
+        }
+
+        .quiz-feedback-box i {
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+
+        .quiz-next-button {
+            margin-top: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quiz-next-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .quiz-results-card {
+            text-align: center;
+            padding: 50px 30px;
+        }
+
+        .results-emoji-large {
+            font-size: 6rem;
+            margin-bottom: 25px;
+        }
+
+        .quiz-results-card h2 {
+            color: #333;
+            margin-bottom: 35px;
+            font-size: 2rem;
+        }
+
+        .results-score-display {
+            margin: 35px 0;
+        }
+
+        .score-circle-large {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .score-text-large {
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .score-percentage-large {
+            font-size: 1.8rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .restart-quiz-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .restart-quiz-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        /* Dark mode support */
+        body.dark-mode .ai-results-container {
+            background: #2c2c2c;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .wordnet-section,
+        body.dark-mode .quiz-question-card {
+            background: #3a3a3a;
+        }
+
+        body.dark-mode .wordnet-section h3,
+        body.dark-mode .quiz-question-card h3 {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .quiz-option-btn {
+            background: #3a3a3a;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+
+        body.dark-mode .quiz-option-btn:hover:not(:disabled) {
+            background: #4a4a4a;
+        }
+
+        body.dark-mode .quiz-results-card h2 {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .ai-search-box input {
+            background: #3a3a3a;
+            color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <h1>VocabBoost</h1>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Type and practise">
+                <button id="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="theme-toggle">
+                <button id="theme-toggle-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            <div class="notification">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">1</span>
+            </div>
+        </header>
+
+        <nav>
+            <ul>
+                <li data-page="learn" class="active">LEARN</li>
+                <li data-page="ai-agent">AI AGENT</li>
+                <li data-page="data">DATA</li>
+                <li data-page="reports">REPORTS</li>
+                <li data-page="feedback">FEEDBACK</li>
+                <li data-page="faqs">FAQs</li>
+            </ul>
+        </nav>
+
+        <main>
+        
+            <section id="learn" class="page active">
+                <div class="sub-nav">
+                    <button data-subpage="new-words" class="active">NEW WORDS</button>
+                    <button data-subpage="rewards">REWARDS</button>
+                    <button data-subpage="levels">LEVELS</button>
+                </div>
+
+                <div id="new-words" class="subpage active">
+                    <div class="word-card">
+                        <div class="word-header">
+                            <h2>Ephemeral</h2>
+                            <div class="word-actions">
+                                <button class="pronunciation-btn"><i class="fas fa-volume-up"></i></button>
+                                <button class="favorite-btn"><i class="far fa-heart"></i></button>
+                                <button class="learn-btn" title="Learn this word"><i class="fas fa-graduation-cap"></i></button>
+                                <button class="share-btn"><i class="fas fa-share-alt"></i></button>
+                            </div>
+                        </div>
+                        <p class="word-type">adjective</p>
+                        <p class="word-definition">Lasting for a very short time.</p>
+                        <div class="word-examples">
+                            <p>Example: <em>The beauty of cherry blossoms is ephemeral, lasting only a few days.</em></p>
+                        </div>
+                        <div class="word-navigation">
+                            <button class="prev-btn"><i class="fas fa-chevron-left"></i> Previous</button>
+                            <button class="next-btn">Next <i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="rewards" class="subpage">
+                    <div class="rewards-container">
+                        <div class="points-display">
+                            <h2>Your Points</h2>
+                            <div class="points-circle">
+                                <span id="total-points">0</span>
+                            </div>
+                        </div>
+                        <div class="rewards-list">
+                            <h3>Achievements</h3>
+                            <ul id="achievements-list">
+                                <li class="achievement locked">
+                                    <i class="fas fa-trophy"></i>
+                                    <div class="achievement-info">
+                                        <h4>Word Master</h4>
+                                        <p>Learn 10 new words</p>
+                                    </div>
+                                    <span class="achievement-status">0/10</span>
+                                </li>
+                                <li class="achievement locked">
+                                    <i class="fas fa-star"></i>
+                                    <div class="achievement-info">
+                                        <h4>Favorite Collector</h4>
+                                        <p>Add 5 words to favorites</p>
+                                    </div>
+                                    <span class="achievement-status">0/5</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="levels" class="subpage">
+                    <div class="levels-container">
+                        <div class="level-card active" id="beginner-level">
+                            <h3>Beginner</h3>
+                            <div class="progress-bar">
+                                <div class="progress" id="beginner-progress" style="width: 0%"></div>
+                            </div>
+                            <p><span id="beginner-percentage">0</span>% Complete</p>
+                            <button class="continue-btn">Continue</button>
+                        </div>
+                        <div class="level-card locked" id="intermediate-level">
+                            <h3>Intermediate</h3>
+                            <div class="progress-bar">
+                                <div class="progress" id="intermediate-progress" style="width: 0%"></div>
+                            </div>
+                            <p><span id="intermediate-percentage">0</span>% Complete</p>
+                            <button class="locked-btn">Locked <i class="fas fa-lock"></i></button>
+                        </div>
+                        <div class="level-card locked" id="advanced-level">
+                            <h3>Advanced</h3>
+                            <div class="progress-bar">
+                                <div class="progress" id="advanced-progress" style="width: 0%"></div>
+                            </div>
+                            <p><span id="advanced-percentage">0</span>% Complete</p>
+                            <button class="locked-btn">Locked <i class="fas fa-lock"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI AGENT SECTION -->
+            <section id="ai-agent" class="page">
+                <div class="sub-nav">
+                    <button data-subpage="word-net" class="active">WORD NET</button>
+                    <button data-subpage="word-clue">WORD CLUE</button>
+                </div>
+
+                <!-- Word Net Subsection -->
+                <div id="word-net" class="subpage active">
+                    <div class="ai-search-container">
+                        <h2><i class="fas fa-network-wired"></i> Word Net Agent</h2>
+                        <div class="ai-search-box">
+                            <input type="text" id="wordnet-search-input" placeholder="Enter a word to explore...">
+                            <button id="wordnet-search-btn"><i class="fas fa-search"></i> Analyze</button>
+                        </div>
+                        <p class="ai-search-info">
+                            <i class="fas fa-info-circle"></i> Discover synonyms, antonyms, and rhyming words instantly!
+                        </p>
+                    </div>
+
+                    <div class="ai-results-container" id="wordnet-results">
+                        <div class="ai-empty-state">
+                            <i class="fas fa-brain"></i>
+                            <p>Enter a word above to see synonyms, antonyms, and rhyming words</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Word Clue Subsection -->
+                <div id="word-clue" class="subpage">
+                    <div class="ai-search-container">
+                        <h2><i class="fas fa-question-circle"></i> Word Clue Agent</h2>
+                        <div class="ai-search-box">
+                            <input type="text" id="wordclue-search-input" placeholder="Enter a word to practice...">
+                            <button id="wordclue-search-btn"><i class="fas fa-play"></i> Start Quiz</button>
+                        </div>
+                        <p class="ai-search-info">
+                            <i class="fas fa-info-circle"></i> Test your understanding with 5 interactive questions!
+                        </p>
+                    </div>
+
+                    <div class="ai-results-container" id="wordclue-results">
+                        <div class="ai-empty-state">
+                            <i class="fas fa-lightbulb"></i>
+                            <p>Enter a word above to start an interactive quiz</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="data" class="page">
+                <div class="sub-nav">
+                    <button data-subpage="saved" class="active">SAVED</button>
+                    <button data-subpage="favorites">FAVORITES</button>
+                    <button data-subpage="feedback-data">FEEDBACK</button>
+                </div>
+
+                <div id="saved" class="subpage active">
+                    <div class="word-list" id="saved-words-list">
+                        
+                    </div>
+                </div>
+
+                <div id="favorites" class="subpage">
+                    <div class="word-list" id="favorite-words-list">
+                        
+                    </div>
+                </div>
+
+                <div id="feedback-data" class="subpage">
+                    <div class="feedback-list" id="feedback-list">
+                        <h3>Submitted Feedback</h3>
+                    </div>
+                </div>
+            </section>
+
+            
+            <section id="reports" class="page">
+                <div class="sub-nav">
+                    <button data-subpage="pie-chart" class="active">PIE CHART</button>
+                    <button data-subpage="bar-graph">BAR GRAPH</button>
+                </div>
+
+                <div id="pie-chart" class="subpage active">
+                    <div class="chart-container">
+                        <h2>Word Categories Distribution</h2>
+                        <div class="chart-wrapper">
+                            <canvas id="categoryPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="bar-graph" class="subpage">
+                    <div class="chart-container">
+                        <h2>Words Learned This Week</h2>
+                        <div class="chart-wrapper">
+                            <canvas id="wordBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            
+            <section id="feedback" class="page">
+                <div class="feedback-container">
+                    <h2>We Value Your Feedback</h2>
+                    <form id="feedback-form">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="feedback-text">Your Feedback</label>
+                            <textarea id="feedback-text" name="feedback" rows="5" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="rating">Rate Your Experience</label>
+                            <div class="rating">
+                                <i class="far fa-star" data-rating="1"></i>
+                                <i class="far fa-star" data-rating="2"></i>
+                                <i class="far fa-star" data-rating="3"></i>
+                                <i class="far fa-star" data-rating="4"></i>
+                                <i class="far fa-star" data-rating="5"></i>
+                            </div>
+                            <input type="hidden" id="rating-value" name="rating" value="0">
+                        </div>
+                        <button type="submit">Submit Feedback</button>
+                    </form>
+                </div>
+            </section>
+            
+        
+            <section id="faqs" class="page">
+                <div class="faq-section">
+                    <h2>Frequently Asked Questions</h2>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>How do I earn points? <i class="fas fa-chevron-down"></i></h3>
+                        </div>
+                        <div class="faq-answer" style="display: none;">
+                            <p>You earn 5 points each time you learn a new word. You can also earn additional points by completing achievements and reaching new levels.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>How do I unlock new levels? <i class="fas fa-chevron-down"></i></h3>
+                        </div>
+                        <div class="faq-answer" style="display: none;">
+                            <p>You need to collect 100 points to unlock the Intermediate level and 200 points to unlock the Advanced level.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>Can I use VocabBoost offline? <i class="fas fa-chevron-down"></i></h3>
+                        </div>
+                        <div class="faq-answer" style="display: none;">
+                            <p>VocabBoost stores your learned words locally, so you can review your saved words offline. However, searching for new words requires an internet connection.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>How can I report an incorrect definition? <i class="fas fa-chevron-down"></i></h3>
+                        </div>
+                        <div class="faq-answer" style="display: none;">
+                            <p>You can report incorrect definitions by clicking the "Feedback" tab and submitting your correction through the feedback form. Our team will review and update it accordingly.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>Are there any subscription plans available? <i class="fas fa-chevron-down"></i></h3>
+                        </div>
+                        <div class="faq-answer" style="display: none;">
+                            <p>VocabBoost offers both free and premium subscription plans. The free plan provides access to basic features, while the premium plan includes advanced features like personalized learning paths and ad-free experience.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>What is the AI Agent section? <i class="fas fa-chevron-down"></i></h3>
+                        </div>
+                        <div class="faq-answer" style="display: none;">
+                            <p>The AI Agent section features two powerful tools: Word Net (discover synonyms, antonyms, and rhyming words) and Word Clue (test your knowledge with interactive quizzes). Simply enter a word and let our AI agents help you learn!</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-top">
+                <div class="app-download">
+                    <p>Download our app</p>
+                    <div class="store-buttons">
+                        <button><i class="fab fa-apple"></i> App Store</button>
+                        <button><i class="fab fa-google-play"></i> Google Play</button>
+                    </div>
+                </div>
+                <div class="contact-info">
+                    <p>Contact us: <a href="tel:9000000000">900-000-0000</a></p>
+                    <p>Email: <a href="mailto:support@vocabboost.com">support@vocabboost.com</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 VocabBoost. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+    <div id="notifications-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script src="main.js"></script>
+    <script src="ai-agent.js"></script>
+</body>
+</html>
